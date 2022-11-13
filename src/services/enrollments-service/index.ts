@@ -4,28 +4,22 @@ import addressRepository, { CreateAddressParams } from "@/repositories/address-r
 import enrollmentRepository, { CreateEnrollmentParams } from "@/repositories/enrollment-repository";
 import { exclude } from "@/utils/prisma-utils";
 import { Address, Enrollment } from "@prisma/client";
-import { ApplicationError, ViaCEPAddress } from "@/protocols";
+import { ApplicationError, NewViaCEPAddress } from "@/protocols";
 
-async function getAddressFromCEP(cep: string): Promise<ViaCEPAddress | ApplicationError> {
+async function getAddressFromCEP(cep: string): Promise<NewViaCEPAddress | ApplicationError> {
   const result = await request.get(`https://viacep.com.br/ws/${cep}/json/`);
 
   if (!result.data) {
     throw notFoundError();
   }
 
-  const addressResult: {
-    logradouro: string,
-    complemento: string,
-    bairro: string,
-    cidade: string,
-    uf: string
-  } = {
+  const addressResult = {
     logradouro: result.data.logradouro,
     complemento: result.data.complemento,
     bairro: result.data.bairro,
     cidade: result.data.localidade,
     uf: result.data.uf
-  };
+  } as NewViaCEPAddress;
 
   return addressResult;
 }
