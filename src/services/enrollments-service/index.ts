@@ -56,7 +56,7 @@ async function createOrUpdateEnrollmentWithAddress(params: CreateOrUpdateEnrollm
   const resultError = (await request.get(`https://viacep.com.br/ws/${address.cep}/json/`)).data.erro;
 
   if (resultError === true) {
-    throw notFoundError();
+    throw requestError(400, "INVALID CEP");
   }
 
   const newEnrollment = await enrollmentRepository.upsert(params.userId, enrollment, exclude(enrollment, "userId"));
